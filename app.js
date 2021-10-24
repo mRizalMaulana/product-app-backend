@@ -32,7 +32,7 @@ const init = async () => {
                     return data.map(product => {
                         return {
                             productName : product.prdNm,
-                            sku : prdNo,
+                            sku : product.prdNo,
                         }
                     })
                  })
