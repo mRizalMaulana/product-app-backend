@@ -13,27 +13,31 @@ const init = async () => {
 
     server.route({
         method: 'GET',
-        path: '/',
-        handler: (request, h) => {
-            return fetch(`${process.env.ELEVENIA_URI}/rest/prodservices/product/listing`, {
-                headers: {
-                    'Content-Type': 'application/xml',
-                    'Accept-Charset': 'utf-8',
-                    'openapikey': process.env.ELEVENIA_API_KEY
-                }
-            })
-            .then(response => response.text())
-            .then(response => xmlParser.toJson(response))
-            .then(response => JSON.parse(response))
-            .then(products => products.Products.product)
-            .then(data => { 
-                return data.map(product => {
-                    return {
-                        productName : product.prdNm
+        path: '/api/products',
+        options: {
+            cors: true,
+            handler: (request, h) => {
+                return fetch(`${process.env.ELEVENIA_URI}/rest/prodservices/product/listing`, {
+                    headers: {
+                        'Content-Type': 'application/xml',
+                        'Accept-Charset': 'utf-8',
+                        'openapikey': process.env.ELEVENIA_API_KEY
                     }
                 })
-             })
-            .catch(err => console.log(err));
+                .then(response => response.text())
+                .then(response => xmlParser.toJson(response))
+                .then(response => JSON.parse(response))
+                .then(products => products.Products.product)
+                .then(data => { 
+                    return data.map(product => {
+                        return {
+                            productName : product.prdNm,
+                            sku : prdNo,
+                        }
+                    })
+                 })
+                .catch(err => console.log(err));
+            }
         }
     });
 
